@@ -1,14 +1,14 @@
-/* Copyright 2013 Ten Wong, wangtengoo7@gmail.com  
+/* Copyright 2013-2014 Ten Wong, wangtengoo7@gmail.com  
 *  https://github.com/awong1900/RF430CL330H_Shield 
 */
-//this code is heavily borrowed from Adafruit_NFCShield_I2C
+//the I2C part of this code is heavily borrowed from Adafruit_NFCShield_I2C
 //link to original https://github.com/adafruit/Adafruit_NFCShield_I2C
 
 #include "RF430CL330H_Shield.h"
+#define I2C_BUFFER_LENGTH  30   //because library Wire's I2C buffer default is 32 bytes
 
 /* Uncomment these lines to enable debug output for RF430(I2C) */
-//#define RF430DEBUG
-
+#define RF430DEBUG
  
 /**
 **  @brief  Sends a single byte via I2C
@@ -51,7 +51,7 @@ RF430CL330H_Shield::RF430CL330H_Shield(uint8_t irq, uint8_t reset)
     //_irq = irq;
     _reset = reset;
 
-    //pinMode(_irq, INPUT); //other shield do not use this shield
+    //pinMode(_irq, INPUT); //arduino's interrupt do not need init
     pinMode(_reset, OUTPUT);
 }
 
@@ -85,14 +85,12 @@ uint16_t RF430CL330H_Shield::Read_Register(uint16_t reg_addr)
     //send slave addr
     Wire.beginTransmission(RF430_I2C_ADDRESS);
     wiresend(TxAddr[0]); //bit15~8
-    delay(1);
     wiresend(TxAddr[1]); //bit7~0
     Wire.endTransmission(); 
     
     //resend slave addr with data
-    Wire.requestFrom((uint8_t)RF430_I2C_ADDRESS, (uint16_t)2);
+    Wire.requestFrom((uint8_t)RF430_I2C_ADDRESS, (uint8_t)2);
     RxData[0] = wirerecv();
-    //delay(1);
     RxData[1] = wirerecv();
     
     //send stop
@@ -104,6 +102,17 @@ uint16_t RF430CL330H_Shield::Read_Register(uint16_t reg_addr)
     return RxData[1] << 8 | RxData[0];
 }
 
+/** 
+**  @brief  Reads one byte data at reg_addr, returns the result
+**  @param  uint16_t    reg_addr    RF430 Register address (16-bit)
+**  @retrun uint8_t    the value(byte) of register
+**/
+uint8_t RF430CL330H_Shield::Read_OneByte(uint16_t reg_addr)
+{
+    byte buf[1];
+    Read_Continuous(reg_addr, buf, 1);
+    return buf[0];
+}
 
 /** 
 **  @brief  Continuous read data_length bytes and store in the area "read_data"
@@ -114,37 +123,60 @@ uint16_t RF430CL330H_Shield::Read_Register(uint16_t reg_addr)
 **/
 void RF430CL330H_Shield::Read_Continuous(uint16_t reg_addr, uint8_t* read_data, uint16_t data_length)
 {
-    uint16_t i;
+    uint16_t split_num = 0;
+    uint16_t remainder = data_length;
+    uint16_t index= 0;
 
-    TxAddr[0] = reg_addr >> 8;      // MSB of address
-    TxAddr[1] = reg_addr & 0xFF;    // LSB of address
-
-    //send slave addr
-    Wire.beginTransmission(RF430_I2C_ADDRESS);
-    wiresend(TxAddr[0]); //bit15~8
-    wiresend(TxAddr[1]); //bit7~0
-    Wire.endTransmission();
-    
-    //resend slave addr with data
-    Wire.requestFrom((uint8_t)RF430_I2C_ADDRESS, data_length);
-    //wirerecv();
-    while(Wire.available())
+    //splite data avoid beyond the wire buffer
+    if (data_length > I2C_BUFFER_LENGTH)
     {
-        for (uint8_t i=0; i<data_length; i++) 
-        {
-            read_data[i] = wirerecv();
-            //delay(1);
-        }
+        split_num = data_length / I2C_BUFFER_LENGTH;
+        remainder = data_length % I2C_BUFFER_LENGTH;
     }
     
-    //send stop
-    Wire.endTransmission();
+    for (uint8_t k=0; k < split_num+1; k++)
+    {
+        //send slave addr
+        Wire.beginTransmission(RF430_I2C_ADDRESS);
+        TxAddr[0] = reg_addr >> 8;      // MSB of address
+        TxAddr[1] = reg_addr & 0xFF;    // LSB of address
+        wiresend(TxAddr[0]); //bit15~8
+        wiresend(TxAddr[1]); //bit7~0
+        Wire.endTransmission();
+
+        if (k != split_num)
+        {
+            //resend slave addr with data
+            Wire.requestFrom((uint8_t)RF430_I2C_ADDRESS, (uint8_t)I2C_BUFFER_LENGTH);
+            while (Wire.available())
+            {
+              for (uint8_t i=0; i < I2C_BUFFER_LENGTH; i++) 
+                  read_data[index+i] = wirerecv();
+            }
+
+            //increase addr
+            index += I2C_BUFFER_LENGTH;
+            reg_addr += I2C_BUFFER_LENGTH;
+        }
+        else
+        {
+            //resend slave addr with data
+            Wire.requestFrom((uint8_t)RF430_I2C_ADDRESS, remainder);
+            while (Wire.available())
+            {
+                for (uint8_t i=0; i < remainder; i++) 
+                  read_data[index+i] = wirerecv();
+            }
+        }
+
+        //send stop
+        Wire.endTransmission();
+    }
+
 #ifdef RF430DEBUG    
     Serial.print("RxData[] = 0x");
     for (uint8_t i=0; i<data_length; i++) 
-    {
-        Serial.print(read_data[i], HEX); 
-    }
+        {Serial.print(read_data[i], HEX);Serial.print(" ");}
     Serial.println("");
 #endif
 }
@@ -169,12 +201,10 @@ void RF430CL330H_Shield::Write_Register(uint16_t reg_addr, uint16_t value)
     //send slave addr
     Wire.beginTransmission(RF430_I2C_ADDRESS);
     wiresend(TxAddr[0]); //bit15~8
-    delay(1);
     wiresend(TxAddr[1]); //bit7~0
 
     //send value
     wiresend(TxData[1]); //bit7~0
-    delay(1);
     wiresend(TxData[0]); //bit15~8
 
     //send stop
@@ -192,31 +222,57 @@ void RF430CL330H_Shield::Write_Register(uint16_t reg_addr, uint16_t value)
 **/
 void RF430CL330H_Shield::Write_Continuous(uint16_t reg_addr, uint8_t* write_data, uint16_t data_length)
 {
-    uint16_t i;
+    uint16_t split_num = 0;
+    uint16_t remainder = data_length;
+    uint16_t index=0;
 #ifdef RF430DEBUG    
-    Serial.print("reg_addr = 0x");Serial.println(reg_addr, HEX);
+    Serial.print("start_addr = 0x");Serial.println(reg_addr, HEX);
     Serial.print("data_length = 0x");Serial.println(data_length, HEX);
     Serial.print("write_data[] = ");
-    for (i=0; i<data_length; i++)
-        Serial.print(write_data[i], HEX);
+    for (uint8_t i=0; i<data_length; i++)
+        {Serial.print(write_data[i], HEX);Serial.print(" ");}
     Serial.println();  
 #endif
-    TxAddr[0] = reg_addr >> 8;      // MSB of address
-    TxAddr[1] = reg_addr & 0xFF;        // LSB of address
 
-    //send slave addr
-    Wire.beginTransmission(RF430_I2C_ADDRESS);
-    wiresend(TxAddr[0]); //bit15~8
-    wiresend(TxAddr[1]); //bit7~0
-    
-    //send data
-    for (uint8_t i=0; i<data_length; i++) 
+    //splite data avoid beyond the wire buffer
+    if(data_length > I2C_BUFFER_LENGTH)
     {
-        wiresend(write_data[i]); 
-        delay(1);
+        split_num = data_length / I2C_BUFFER_LENGTH;
+        remainder = data_length % I2C_BUFFER_LENGTH;
     }
-    //send stop
-    Wire.endTransmission();
+
+    for (int k=0; k < split_num+1; k++)
+    {
+        //send slave addr
+        Wire.beginTransmission(RF430_I2C_ADDRESS);
+
+        //Serial.print("reg_addr = 0x");Serial.println(reg_addr, HEX);
+        TxAddr[0] = reg_addr >> 8;        // MSB of address
+        TxAddr[1] = reg_addr & 0xFF;      // LSB of address
+        wiresend(TxAddr[0]); //bit15~8
+        wiresend(TxAddr[1]); //bit7~0
+
+        if (k != split_num)
+        {
+            //send data
+            for (uint8_t i=0; i < I2C_BUFFER_LENGTH; i++) 
+                wiresend(write_data[index+i]); 
+                
+            //increase addr
+            index += I2C_BUFFER_LENGTH;
+            reg_addr += I2C_BUFFER_LENGTH;
+        } 
+        else 
+        {
+            //send data
+            for (uint8_t i=0; i < remainder; i++) 
+                wiresend(write_data[index+i]); 
+        }
+        //send stop
+        Wire.endTransmission();
+
+    }
+
 }
 
 

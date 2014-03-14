@@ -1,7 +1,7 @@
-/* Copyright 2013 Ten Wong, wangtengoo7@gmail.com  
+/* Copyright 2013-2014 Ten Wong, wangtengoo7@gmail.com  
 *  https://github.com/awong1900/RF430CL330H_Shield 
 */
-//this code is heavily borrowed from Adafruit_NFCShield_I2C
+//the I2C part of this code is heavily borrowed from Adafruit_NFCShield_I2C
 //link to original https://github.com/adafruit/Adafruit_NFCShield_I2C
 
 //  RF430 User Address Map
@@ -39,8 +39,8 @@
 //
 //******************************************************************************
 
-#ifndef AWONG_RF430_I2C_H_
-#define AWONG_RF430_I2C_H_
+#ifndef RF430CL330H_SHIELD_H_
+#define RF430CL330H_SHIELD_H_
 #if ARDUINO >= 100
  #include "Arduino.h"
 #else
@@ -165,11 +165,11 @@ public:
     void begin();
     
     uint16_t Read_Register(uint16_t reg_addr);
+    uint8_t Read_OneByte(uint16_t reg_addr); 
     void Read_Continuous(uint16_t reg_addr, uint8_t* read_data, uint16_t data_length);
 
     void Write_Register(uint16_t reg_addr, uint16_t value);
     void Write_Continuous(uint16_t reg_addr, uint8_t* write_data, uint16_t data_length);
-
 private:
     byte RxData[2];
     byte TxData[2];
@@ -178,5 +178,5 @@ private:
     uint8_t _irq, _reset;
 };
 
-#endif /* AWONG_RF430_I2C_H_ */
+#endif /* RF430CL330H_SHIELD_H_ */
 
