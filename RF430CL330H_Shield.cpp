@@ -8,7 +8,7 @@
 #define I2C_BUFFER_LENGTH  30   //because library Wire's I2C buffer default is 32 bytes
 
 /* Uncomment these lines to enable debug output for RF430(I2C) */
-#define RF430DEBUG
+//#define RF430DEBUG
  
 /**
 **  @brief  Sends a single byte via I2C
@@ -67,6 +67,20 @@ void RF430CL330H_Shield::begin()
     digitalWrite(_reset, LOW);
     delay(100);                   //Reset:low level 100ms
     digitalWrite(_reset, HIGH);
+    delay(1000);
+    
+    while(!(Read_Register(STATUS_REG) & READY)); //wait until READY bit has been set
+    Serial.print("Fireware Version:");Serial.println(Read_Register(VERSION_REG), HEX);    
+
+    byte NDEF_Application_Data[] = RF430_DEFAULT_DATA;
+    //write NDEF memory with Capability Container + NDEF message
+    Write_Continuous(0, NDEF_Application_Data, sizeof(NDEF_Application_Data));
+
+    //Enable interrupts for End of Read and End of Write
+    Write_Register(INT_ENABLE_REG, EOW_INT_ENABLE + EOR_INT_ENABLE);
+
+    //Configure INTO pin for active low and enable RF
+    Write_Register(CONTROL_REG, INT_ENABLE + INTO_DRIVE + RF_ENABLE );
 }
 
 
@@ -275,4 +289,28 @@ void RF430CL330H_Shield::Write_Continuous(uint16_t reg_addr, uint8_t* write_data
 
 }
 
+
+/** 
+**  @brief  writes the NDEF message to RF430 memory
+**  @param  uint8_t*    msgNDEF     buffer for store the NDEF message
+**  @param  uint16_t    msg_length  length of message    
+**  @retrun void
+**/
+void RF430CL330H_Shield::Write_NDEFmessage(uint8_t* msgNDEF, uint16_t msg_length)
+{
+    byte buf[2];
+    buf[0] = msg_length >> 8;      // MSB of message length
+    buf[1] = msg_length & 0xFF;    // LSB of message length 
+
+    while (Read_Register(STATUS_REG) & RF_BUSY)
+        delay(1000);
+    //clear control reg to disable RF
+    Write_Register(CONTROL_REG, INT_ENABLE + INTO_DRIVE); 
+    
+    Write_Continuous(0x1A, buf, 2);
+    Write_Continuous(0x1C, msgNDEF, msg_length);
+
+    //Configure INTO pin for active low and enable RF
+    Write_Register(CONTROL_REG, INT_ENABLE + INTO_DRIVE + RF_ENABLE );
+}
 
