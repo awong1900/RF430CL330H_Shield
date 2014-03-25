@@ -30,8 +30,8 @@ RF430CL330H_Shield nfc(IRQ, RESET);
     /* CC file start */    \
     0x00, 0x0F,     /* CCLEN 15bytes fix*/    \
     0x20,     /* Mapping version 2.0 */    \
-    0x00, 0x3B,     /* MLe (59 bytes); Maximum R-APDU data size */    \
-    0x00, 0x34,     /* MLc (52 bytes); Maximum C-APDU data size */    \
+    0x00, 0xF9,     /* MLe (249 bytes); Maximum R-APDU data size */    \
+    0x00, 0xF4,     /* MLc (246 bytes); Maximum C-APDU data size */    \
     0x04,     /* Tag, File Control TLV (4 = NDEF file) */    \
     0x06,     /* Length, File Control TLV (6 = 6 bytes of data for this tag) */    \
     0xE1, 0x04,     /* Type4 Tag File Identifier */    \
