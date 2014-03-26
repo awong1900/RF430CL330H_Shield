@@ -1,5 +1,5 @@
 /* Copyright 2014 Ten Wong, wangtengoo7@gmail.com  
-*  
+*  https://github.com/awong1900/RF430CL330H_Shield 
 */
 #include "NdefRecord.h"
 /* Uncomment these lines to enable debug output  */
@@ -155,12 +155,12 @@ NdefRecord::NdefRecord() {
 
 /**
 * @brief  Construct an NDEF Record from its component fields
-* @param tnf  a 3-bit TNF constant
-* @param type byte array, containing zero to 255 bytes
-* @param type_length  length of type
-* @param id   byte array, containing zero to 255 bytes
-* @param id_length   length of id
-* @param payload byte array, containing zero to (2 ** 32 - 1) bytes
+* @param tnf            a 3-bit TNF constant
+* @param type           byte array, containing zero to 255 bytes
+* @param type_length    length of type
+* @param id   byte      array, containing zero to 255 bytes
+* @param id_length      length of id
+* @param payload        byte array, containing zero to (2 ** 32 - 1) bytes
 * @param payload_length length of payload
 * @return
 */
@@ -246,9 +246,9 @@ void NdefRecord::createUri(String uriString) {
 /**
 * Reference specification: NFCForum-TS-RTD_1.0
 * @brief  a new NDEF Record containing external (application-specific) data
-* @param  domain  domain-name of issuing organization
-* @param  type    domain-specific type of data
-* @param  data    payload as bytes
+* @param  domain        domain-name of issuing organization
+* @param  type          domain-specific type of data
+* @param  data          payload as bytes
 * @param  data_length   length of payload
 * @return
 */
@@ -285,7 +285,6 @@ void NdefRecord::createExternal(String domain, String type, byte data[], uint16_
 * @param  mimeData MIME data as bytes
 * @param  mimeData_length  length of MIME data
 * @return 
-* @throws IllegalArugmentException if the mimeType is empty or invalid
 *
 */
 void NdefRecord::createMime(String mimeType, byte mimeData[], uint16_t mimeData_length) {
@@ -293,7 +292,6 @@ void NdefRecord::createMime(String mimeType, byte mimeData[], uint16_t mimeData_
     Serial.println("[ERROR]mimeType is empty");
     return;
   }
-  Serial.println(mimeType);
   // We only do basic MIME type validation: trying to follow the
   // RFCs strictly only ends in tears, since there are lots of MIME
   // types in common use that are not strictly valid as per RFC rules
@@ -321,7 +319,6 @@ void NdefRecord::createMime(String mimeType, byte mimeData[], uint16_t mimeData_
   // MIME RFCs suggest ASCII encoding for content-type
   byte typeBytes[mimeType.length()+1];
   mimeType.getBytes(typeBytes, mimeType.length()+1);
-  Serial.println(mimeType);
   
   createNdefRecord(TNF_MIME_MEDIA, typeBytes, mimeType.length(), EMPTY_BYTE_ARRAY, 0,
                       mimeData, mimeData_length);
@@ -329,7 +326,7 @@ void NdefRecord::createMime(String mimeType, byte mimeData[], uint16_t mimeData_
 
 /**
 * @breif a new Android Application Record (AAR)
-* @param  packageName Android package name
+* @param  packageName   Android package name
 * @return 
 */
 void NdefRecord::createApplicationRecord(String packageName) {
@@ -345,12 +342,13 @@ void NdefRecord::createApplicationRecord(String packageName) {
 
 /**
 * @breif an NDEF Record containing the Text-typed data
-* @param  payload_encode text encoded data as bytes
-* @param  payload_length length of payload_encode
-* @param  encodeInUtf8   ture:utf-8 encode, false:utf-16 encode
+* @param  text_encode       text encoded data as bytes
+* @param  language          see NdefRecord.h "unicode locale"
+* @param  payload_length    length of payload_encode
+* @param  encodeInUtf8      ture:utf-8 encode, false:utf-16 encode
 * @return 
 */
-void NdefRecord::createText(byte payload_encode[],uint16_t payload_length, 
+void NdefRecord::createText(byte text_encode[],uint16_t payload_length, 
                               byte* language, boolean encodeInUtf8) 
 {
   int utfBit = encodeInUtf8 ? 0 : (1 << 7);
@@ -358,7 +356,7 @@ void NdefRecord::createText(byte payload_encode[],uint16_t payload_length,
   byte data[1 + 2 + payload_length];
   data[0] = (byte) status;
   arraycopy(language, 0, data, 1, 2);
-  arraycopy(payload_encode, 0, data, (1+2), payload_length);
+  arraycopy(text_encode, 0, data, (1+2), payload_length);
   createNdefRecord(TNF_WELL_KNOWN, RTD_TEXT, 1, EMPTY_BYTE_ARRAY, 0,
                     data, 1 + 2 + payload_length);
 }

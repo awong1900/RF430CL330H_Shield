@@ -1,11 +1,11 @@
-/* Copyright 2013 Ten Wong, wangtengoo7@gmail.com  
-*  https://github.com/awong1900/RF430CL330H_Shield
+/* Copyright 2013-2014 Ten Wong, wangtengoo7@gmail.com  
+*  https://github.com/awong1900/RF430CL330H_Shield 
 */
 
-/*******************************************************************
-** sample: easy to creat various NDEF format records, 
-** such as URI, MIME, Text, External, Application and so on.
-*******************************************************************/
+/*********************************************************
+** sample: when nfc device write the ndef data to rf430 tag, 
+** the arduino will read it via I2C.
+***********************************************************/
 #if ARDUINO >= 100
  #include "Arduino.h"
 #else
@@ -13,8 +13,6 @@
 #endif
 #include <Wire.h>
 #include <RF430CL330H_Shield.h>
-#include <NdefMessage.h>
-#include <NdefRecord.h>
 
 #define IRQ   (3)
 #define RESET (4)  
@@ -35,44 +33,7 @@ void setup(void)
     
     //enable interrupt 1
     attachInterrupt(1, RF430_Interrupt, FALLING);
-    
-/** easy to create NDEF message with library NDEFRecord and NDEFMessage **/
-
-    NdefRecord records[5];
-
-    //#record0 for URI
-    records[0].createUri("https://github.com/awong1900/RF430CL330H_Shield");
-
-    //#record1 for External
-    byte exData[] = {0x10, 0x11, 0x12, 0x13, 0x14};
-    String domain = "nfc"; 
-    String type = "dtag";
-    records[1].createExternal(domain, type, exData, sizeof(exData));
-
-    //#record2 for MIME
-    String mimeType = "application/vnd.com.example.android.beam";
-    byte mimeData[] = "Beam me up, Android";
-    records[2].createMime(type, exData, sizeof(exData));
-    
-    //#record3 for Text
-    byte text_encode[] = "Hey, Genius!";
-    records[3].createText(text_encode, sizeof(text_encode), ENGLISH, true);
-
-    //#record4 for Application
-    String packageName = "com.google.android.apps.maps";
-    records[4].createApplicationRecord(packageName);
-
-    //define ndef message
-    NdefMessage msg(records, sizeof(records)/sizeof(NdefRecord));
-    uint16_t msg_length = msg.getByteArrayLength();
-    byte message[msg_length];
-
-    //get ndef message
-    msg.toByteArray(message);
-
-    //write message to TAG memory
-    nfc.Write_NDEFmessage(message, msg_length);
-
+        
     Serial.println("Wait for read or write...");
 }
 
@@ -94,6 +55,7 @@ void loop(void)
         if(flags & EOW_INT_FLAG)      //check if the tag was written
         {
             Serial.println("The tag was written!");
+	    printf_tag();
             digitalWrite(led, LOW);
             delay(2000);
             digitalWrite(led, HIGH);
@@ -127,4 +89,38 @@ void RF430_Interrupt()
     into_fired = 1;
     detachInterrupt(1);//cancel interrupt
 }
+
+
+/**
+**  @brief print the writted Tag data
+**/
+void printf_tag()
+{
+    uint16_t msg_length = 0;
+    uint16_t tag_length = 0;
+    
+    /* get the NDEF Message Length */
+    msg_length = nfc.Read_OneByte(0x001A) << 8 | nfc.Read_OneByte(0x001B);
+    //Serial.print("msg_length = 0x");Serial.println(msg_length, HEX);
+    
+    /* entire Tag length */
+    tag_length = msg_length + 0x1C;
+    //Serial.print("tag_length = 0x");Serial.println(tag_length, HEX);
+
+    byte buffer[tag_length];
+    
+    /* print the entire tag data */
+    nfc.Read_Continuous(0, buffer, tag_length);   
+    Serial.println("RF430[]=0x");
+    for (uint8_t i=0; i < tag_length; i++)
+    {
+        Serial.print(buffer[i], HEX);
+        Serial.print(" "); 
+        if (i%0x10 == 0x0F)
+            Serial.println(); 
+    }
+    Serial.println(); 
+    
+}
+
 

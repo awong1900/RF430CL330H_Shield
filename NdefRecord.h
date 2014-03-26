@@ -1,5 +1,5 @@
 /* Copyright 2014 Ten Wong, wangtengoo7@gmail.com  
-*  
+*  https://github.com/awong1900/RF430CL330H_Shield
 */
 #ifndef NDEFRECORD_H_
 #define NDEFRECORD_H_
