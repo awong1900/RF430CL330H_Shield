@@ -305,13 +305,13 @@ void RF430CL330H_Shield::Write_NDEFmessage(uint8_t* msgNDEF, uint16_t msg_length
     while (Read_Register(STATUS_REG) & RF_BUSY)
         delay(1000);
     //clear control reg to disable RF
-    Write_Register(CONTROL_REG, nfc.Read_Register(CONTROL_REG) & ~RF_ENABLE); 
+    Write_Register(CONTROL_REG, Read_Register(CONTROL_REG) & ~RF_ENABLE); 
 
     //write message data
     Write_Continuous(0x1A, buf, 2);
     Write_Continuous(0x1C, msgNDEF, msg_length);
 
     //Configure INTO pin for active low and enable RF
-    Write_Register(CONTROL_REG, nfc.Read_Register(CONTROL_REG) | RF_ENABLE); 
+    Write_Register(CONTROL_REG, Read_Register(CONTROL_REG) | RF_ENABLE); 
 }
 
