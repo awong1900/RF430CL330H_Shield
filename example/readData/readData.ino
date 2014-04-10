@@ -42,7 +42,7 @@ void loop(void)
     if(into_fired)
     {
         //clear control reg to disable RF
-        nfc.Write_Register(CONTROL_REG, INT_ENABLE + INTO_DRIVE); 
+        nfc.Write_Register(CONTROL_REG, nfc.Read_Register(CONTROL_REG) & ~RF_ENABLE); 
         delay(750);
         
         //read the flag register to check if a read or write occurred
@@ -72,7 +72,7 @@ void loop(void)
         into_fired = 0; //we have serviced INT1
 
         //Configure INTO pin for active low and re-enable RF
-        nfc.Write_Register(CONTROL_REG, INT_ENABLE + INTO_DRIVE + RF_ENABLE);
+        nfc.Write_Register(CONTROL_REG, nfc.Read_Register(CONTROL_REG) | RF_ENABLE); 
 
         //re-enable INTO
         attachInterrupt(1, RF430_Interrupt, FALLING);

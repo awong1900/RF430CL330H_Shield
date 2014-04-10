@@ -33,9 +33,6 @@ void setup(void)
     //RF430 init
     nfc.begin();
     
-    //enable interrupt 1
-    attachInterrupt(1, RF430_Interrupt, FALLING);
-    
 /** easy to create NDEF message with library NDEFRecord and NDEFMessage **/
 
     NdefRecord records[5];
@@ -73,6 +70,11 @@ void setup(void)
     //write message to TAG memory
     nfc.Write_NDEFmessage(message, msg_length);
 
+/** write message end **/
+
+    //enable interrupt 1
+    attachInterrupt(1, RF430_Interrupt, FALLING);
+    
     Serial.println("Wait for read or write...");
 }
 
@@ -81,12 +83,11 @@ void loop(void)
     if(into_fired)
     {
         //clear control reg to disable RF
-        nfc.Write_Register(CONTROL_REG, INT_ENABLE + INTO_DRIVE); 
+        nfc.Write_Register(CONTROL_REG, nfc.Read_Register(CONTROL_REG) & ~RF_ENABLE); 
         delay(750);
         
         //read the flag register to check if a read or write occurred
         flags = nfc.Read_Register(INT_FLAG_REG); 
-        //Serial.print("INT_FLAG_REG = 0x");Serial.println(flags, HEX);
 
         //ACK the flags to clear
         nfc.Write_Register(INT_FLAG_REG, EOW_INT_FLAG + EOR_INT_FLAG); 
@@ -110,7 +111,7 @@ void loop(void)
         into_fired = 0; //we have serviced INT1
 
         //Configure INTO pin for active low and re-enable RF
-        nfc.Write_Register(CONTROL_REG, INT_ENABLE + INTO_DRIVE + RF_ENABLE);
+        nfc.Write_Register(CONTROL_REG, nfc.Read_Register(CONTROL_REG) | RF_ENABLE); 
 
         //re-enable INTO
         attachInterrupt(1, RF430_Interrupt, FALLING);
