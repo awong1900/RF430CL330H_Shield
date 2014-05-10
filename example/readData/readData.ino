@@ -55,7 +55,7 @@ void loop(void)
         if(flags & EOW_INT_FLAG)      //check if the tag was written
         {
             Serial.println("The tag was written!");
-	    printf_tag();
+            printf_tag();
             digitalWrite(led, LOW);
             delay(2000);
             digitalWrite(led, HIGH);
@@ -114,6 +114,8 @@ void printf_tag()
     Serial.println("RF430[]=0x");
     for (uint8_t i=0; i < tag_length; i++)
     {
+        if (buffer[i] < 0x10)
+            Serial.print("0"); 
         Serial.print(buffer[i], HEX);
         Serial.print(" "); 
         if (i%0x10 == 0x0F)
