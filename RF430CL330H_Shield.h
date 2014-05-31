@@ -135,8 +135,8 @@
 0xE1, 0x03,                                                                             \
 0x00, 0x0F, /* CCLEN */                                                                 \
 0x20,       /* Mapping version 2.0 */                                                   \
-0x00, 0xF9, /* MLe (249 bytes); Maximum R-APDU data size */                              \
-0x00, 0xF6, /* MLc (246 bytes); Maximum C-APDU data size */                              \
+0x00, 0xF9, /* MLe (249 bytes); Maximum R-APDU data size */                             \
+0x00, 0xF6, /* MLc (246 bytes); Maximum C-APDU data size */                             \
 0x04,       /* Tag, File Control TLV (4 = NDEF file) */                                 \
 0x06,       /* Length, File Control TLV (6 = 6 bytes of data for this tag) */           \
 0xE1, 0x04, /* File Identifier */                                                       \
@@ -170,6 +170,7 @@ public:
 
     void Write_Register(uint16_t reg_addr, uint16_t value);
     void Write_Continuous(uint16_t reg_addr, uint8_t* write_data, uint16_t data_length);
+    void Write_NDEFmessage(uint8_t* msgNDEF, uint16_t msg_length);
 private:
     byte RxData[2];
     byte TxData[2];
