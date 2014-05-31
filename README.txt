@@ -1,20 +1,19 @@
 
-RF430CL330H_Shield
+RF430CL330H_Shield (DNFC Tag)
 ==================
-
-The Texas Instruments Dynamic NFC Interface Transponder RF430CL330H is a NFC Tag Type 4 device.
-
+Buy DNFC Tag here http://igg.me/at/GOODNFCTAG/x/7649823
+The DNFC tag is reprogrammable with a microcontroller with an I2C interface thanks to TI¡¯s RF430CL330H dynamic NFC transponder IC.
 
 Connect Guide
 //                                /|\  /|\    (Host/Tester)
-//                   RF430        10k  10k     Arduino 2560
+//                  DNFC Tag      10k  10k     Arduino 2560/UNO
 //                  (Slave)        |    |        Master
 //             _________________   |    |   _________________
-//            |              SDA|<-|----+->|P20              |
+//     3.3V<--|VCC           SDA|<-|----+->|P20/A4(UNO)      |
 //            |                 |  | I2C   |                 |
-//            |              SCL|<-+------>|P21              |
+//            |              SCL|<-+------>|P21/A5(UNO)      |
 //            |                 |          |                 |
-//      GND<--|E(2-0)       /RST|<---------|P4               |
+//      GND<--|GND          /RST|<---------|P4               |
 //            |             INTO|--------->|P3(INT1)         |
 //            |                 |          |                 |
 //            |                 |          |                 |
