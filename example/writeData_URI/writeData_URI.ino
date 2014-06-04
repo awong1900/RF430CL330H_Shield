@@ -90,6 +90,9 @@ void setup(void)
     //write NDEF memory with Capability Container + NDEF message
     nfc.Write_Continuous(0, NDEF_Application_Data, sizeof(NDEF_Application_Data));
     
+    //set NDEF message read-only
+    //nfc.SetReadOnly(true);
+    
     //enable interrupt 1
     attachInterrupt(1, RF430_Interrupt, FALLING);
         

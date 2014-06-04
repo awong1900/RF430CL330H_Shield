@@ -171,6 +171,7 @@ public:
     void Write_Register(uint16_t reg_addr, uint16_t value);
     void Write_Continuous(uint16_t reg_addr, uint8_t* write_data, uint16_t data_length);
     void Write_NDEFmessage(uint8_t* msgNDEF, uint16_t msg_length);
+    void SetReadOnly(uint8_t onOff);
 private:
     byte RxData[2];
     byte TxData[2];

@@ -315,3 +315,27 @@ void RF430CL330H_Shield::Write_NDEFmessage(uint8_t* msgNDEF, uint16_t msg_length
     Write_Register(CONTROL_REG, Read_Register(CONTROL_REG) | RF_ENABLE); 
 }
 
+/**  @brief  set NDEF message is read-only
+**  @param  uint8_t    onOff     true: read-only
+**  @retrun void
+**/
+void RF430CL330H_Shield::SetReadOnly(uint8_t onOff)
+{
+    byte buf[1];
+    
+    if (onOff == true)
+        buf[0] = 0xFF;    //0x00:write, 0xFF:read-only
+    else
+        buf[0] = 0x00;
+        
+    while (Read_Register(STATUS_REG) & RF_BUSY)
+        delay(1000);
+    //clear control reg to disable RF
+    Write_Register(CONTROL_REG, Read_Register(CONTROL_REG) & ~RF_ENABLE); 
+
+    //write access data
+    Write_Continuous(0x17, buf, 1); 
+    
+    //Configure INTO pin for active low and enable RF
+    Write_Register(CONTROL_REG, Read_Register(CONTROL_REG) | RF_ENABLE); 
+}
