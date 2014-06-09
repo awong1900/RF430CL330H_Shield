@@ -2,6 +2,7 @@
 RF430CL330H_Shield (DNFC Tag)
 ==================
 Buy DNFC Tag here http://igg.me/at/GOODNFCTAG/x/7649823
+More info : http://www.elecfreaks.com
 
 The DNFC tag is reprogrammable with a microcontroller with an I2C interface thanks to TI's RF430CL330H dynamic NFC transponder IC.
 

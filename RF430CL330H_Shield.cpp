@@ -1,7 +1,8 @@
 /* Copyright 2013-2014 Ten Wong, wangtengoo7@gmail.com  
 *  https://github.com/awong1900/RF430CL330H_Shield 
+*  More info : http://www.elecfreaks.com
 */
-//the I2C part of this code is heavily borrowed from Adafruit_NFCShield_I2C
+//the I2C part of this code is borrowed from Adafruit_NFCShield_I2C
 //link to original https://github.com/adafruit/Adafruit_NFCShield_I2C
 
 #include "RF430CL330H_Shield.h"
