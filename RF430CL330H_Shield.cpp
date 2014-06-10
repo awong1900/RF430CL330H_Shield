@@ -62,6 +62,7 @@ RF430CL330H_Shield::RF430CL330H_Shield(uint8_t irq, uint8_t reset)
 **/
 void RF430CL330H_Shield::begin()
 {
+    uint16_t version;
     Wire.begin();
     // Reset the RF430  
     digitalWrite(_reset, HIGH);
@@ -71,8 +72,31 @@ void RF430CL330H_Shield::begin()
     delay(1000);
     
     while(!(Read_Register(STATUS_REG) & READY)); //wait until READY bit has been set
-    Serial.print("Fireware Version:");Serial.println(Read_Register(VERSION_REG), HEX);    
 
+    version = Read_Register(VERSION_REG);
+    Serial.print("Fireware Version:");Serial.println(version, HEX);    
+
+    /** Errata Fix : Unresponsive RF - recommended firmware
+    *   reference: RF430CL330H Device Erratasheet, SLAZ540D-June 2013-Revised January
+    */
+    if (version == 0x0101 || version == 0x0201)
+    { // the issue exists in these two versions
+        Write_Register(TEST_MODE_REG, TEST_MODE_KEY);
+        Write_Register(CONTROL_REG, 0x0080);
+        if (version == 0x0101)
+        { // Ver C
+            Write_Register(0x2a98, 0x0650);
+        }
+        else
+        { // Ver D
+            Write_Register(0x2a6e, 0x0650);
+        }
+        Write_Register(0x2814, 0);
+        Write_Register(TEST_MODE_REG, 0);
+    }
+    //Upon exit of this block, the control register is set to 0x0
+    /** Fix end */
+    
     byte NDEF_Application_Data[] = RF430_DEFAULT_DATA;
     //write NDEF memory with Capability Container + NDEF message
     Write_Continuous(0, NDEF_Application_Data, sizeof(NDEF_Application_Data));
