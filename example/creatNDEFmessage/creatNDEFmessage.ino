@@ -16,8 +16,14 @@
 #include <NdefMessage.h>
 #include <NdefRecord.h>
 
-#define IRQ   (3)
+//for UNO, Nona...
+#define IRQ   (1)   //External interrupt 3
 #define RESET (4)  
+
+//for Elecfreak NFC TAG BOT V1.2(base on Leonardo) 
+//#define IRQ   (4)  //External interrupt 7 
+//#define RESET (6)  
+
 int led = 13;
 RF430CL330H_Shield nfc(IRQ, RESET);
 
@@ -72,8 +78,8 @@ void setup(void)
 
 /** write message end **/
 
-    //enable interrupt 1
-    attachInterrupt(1, RF430_Interrupt, FALLING);
+    //enable interrupt
+    attachInterrupt(IRQ, RF430_Interrupt, FALLING);
     
     Serial.println("Wait for read or write...");
 }
@@ -114,7 +120,7 @@ void loop(void)
         nfc.Write_Register(CONTROL_REG, nfc.Read_Register(CONTROL_REG) | RF_ENABLE); 
 
         //re-enable INTO
-        attachInterrupt(1, RF430_Interrupt, FALLING);
+        attachInterrupt(IRQ, RF430_Interrupt, FALLING);
     }
 
     delay(100);
@@ -126,6 +132,6 @@ void loop(void)
 void RF430_Interrupt()            
 {
     into_fired = 1;
-    detachInterrupt(1);//cancel interrupt
+    detachInterrupt(IRQ);//cancel interrupt
 }
 
