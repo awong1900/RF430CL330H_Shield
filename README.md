@@ -1,12 +1,14 @@
 
 RF430CL330H_Shield (DNFC Tag)
 ==================
-Buy DNFC Tag here http://igg.me/at/GOODNFCTAG/x/7649823
+## [Indiegogo](https://www.indiegogo.com/projects/dnfc-tag-nfc-that-interacts-with-microcontroller)
 More info : http://www.elecfreaks.com
 
 The DNFC tag is reprogrammable with a microcontroller with an I2C interface thanks to TI's RF430CL330H dynamic NFC transponder IC.
 
-Connect Guide
+## Connect Guide
+
+```
 //                                /|\  /|\    (Host/Tester)
 //                  DNFC Tag      10k  10k     Arduino 2560/UNO
 //                  (Slave)        |    |        Master
@@ -21,19 +23,4 @@ Connect Guide
 //            |                 |          |                 |
 //            |                 |          |                 |
 //            |_________________|          |_________________|
-
-RF430 User Address Map
-//  -----------------------------------------
-//  Address     | Size  | Description       |
-//  -----------------------------------------
-//  0xFFFE      | 2B    | Control Register  |
-//  0xFFFC      | 2B    | Status Register   |
-//  0xFFFA      | 2B    | Interrupt Enable  |
-//  0xFFF8      | 2B    | Interrupt Flags   |
-//  0xFFF6      | 2B    | CRC Result        |
-//  0xFFF4      | 2B    | CRC Length        |
-//  0xFFF2      | 2B    | CRC Start Address |
-//  0xFFF0      | 2B    | Comm WD Ctrl Reg  |
-//  -----------------------------------------
-//  0x0000 -    | 2kB   | NDEF App Memory   |
-//  0x07FF      |       |                   |
+```
