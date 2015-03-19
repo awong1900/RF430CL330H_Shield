@@ -11,7 +11,7 @@ The DNFC tag is reprogrammable with a microcontroller with an I2C interface than
 ![nfc tag](http://www.elecfreaks.com/store/images/DNFC%20TAG-01.jpg)
 
 ## Start up:
-- connect Arduino 2560/UNO with NFC Tag, see Connect Guide.
+- connect Arduino 2560/UNO with NFC Tag, see [Connect Guide](https://github.com/awong1900/RF430CL330H_Shield/blob/master/README.md#connect-guide).
 - make this library to arduino IDE
 - use example to test your Tag
 
