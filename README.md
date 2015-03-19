@@ -7,6 +7,7 @@ The DNFC tag is reprogrammable with a microcontroller with an I2C interface than
 ## Info 
 - Indiegogo - [info](https://www.indiegogo.com/projects/dnfc-tag-nfc-that-interacts-with-microcontroller)
 - DNC Tag - [Buy](http://www.elecfreaks.com/store/dnfc-tag-p-745.html?zenid=5854397ad30b2f1aeee5a31489913af8)
+
 ![nfc tag](http://www.elecfreaks.com/store/images/DNFC%20TAG-01.jpg)
 
 ## Start up:
@@ -39,7 +40,8 @@ use NFC to water flower, and take the temperature, humidity, soil moisture.
 //            |                 |          |                 |
 //            |_________________|          |_________________|
 ```
-## Wiki
-http://www.elecfreaks.com/wiki/index.php?title=Dynamic_NFC_Tag
+## Wiki & Forum
 
+- [wiki](http://www.elecfreaks.com/wiki/index.php?title=Dynamic_NFC_Tag) - More resource about this NFC Tag
+- [Forum](http://www.elecfreaks.com/forum/)-Ask questions and share your feedback
 
