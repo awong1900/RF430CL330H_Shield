@@ -43,5 +43,5 @@ use NFC to water flower, and take the temperature, humidity, soil moisture.
 ## Wiki & Forum
 
 - [wiki](http://www.elecfreaks.com/wiki/index.php?title=Dynamic_NFC_Tag) - More resource about this NFC Tag
-- [Forum](http://www.elecfreaks.com/forum/)-Ask questions and share your feedback
+- [Forum](http://www.elecfreaks.com/forum/) - Ask questions and share your feedback
 
