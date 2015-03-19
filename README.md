@@ -5,8 +5,8 @@ RF430CL330H_Shield (DNFC Tag)
 The DNFC tag is reprogrammable with a microcontroller with an I2C interface thanks to TI's RF430CL330H dynamic NFC transponder IC.
 
 ## Info 
-[Indiegogo](https://www.indiegogo.com/projects/dnfc-tag-nfc-that-interacts-with-microcontroller)
-Buy arduino [DNC Tag](http://www.elecfreaks.com/store/dnfc-tag-p-745.html?zenid=5854397ad30b2f1aeee5a31489913af8) module.
+- Indiegogo - [info](https://www.indiegogo.com/projects/dnfc-tag-nfc-that-interacts-with-microcontroller)
+- DNC Tag - [Buy](http://www.elecfreaks.com/store/dnfc-tag-p-745.html?zenid=5854397ad30b2f1aeee5a31489913af8)
 ![nfc tag](http://www.elecfreaks.com/store/images/DNFC%20TAG-01.jpg)
 
 ## Start up:
