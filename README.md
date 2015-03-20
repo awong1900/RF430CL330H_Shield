@@ -25,13 +25,13 @@ use NFC to water flower, and take the temperature, humidity, soil moisture.
 ## Connect Guide
 
 ```
-//                                /|\  /|\    (Host/Tester)
-//                  DNFC Tag      10k  10k     Arduino 2560/UNO
-//                  (Slave)        |    |        Master
-//             _________________   |    |   _________________
-//     3.3V<--|VCC           SDA|<-|----+->|P20/A4(UNO)      |
-//            |                 |  | I2C   |                 |
-//            |              SCL|<-+------>|P21/A5(UNO)      |
+//                                            (Host/Tester)
+//                  DNFC Tag                 Arduino 2560/UNO
+//                  (Slave)                      Master
+//             _________________            _________________
+//     3.3V<--|VCC           SDA|<-------->|P20(2560)/A4(UNO)|
+//            |                 |    I2C   |                 |
+//            |              SCL|<-------->|P21(2560)/A5(UNO)|
 //            |                 |          |                 |
 //      GND<--|GND          /RST|<---------|P4               |
 //            |             INTO|--------->|P3(INT1)         |
