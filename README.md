@@ -1,5 +1,5 @@
 
-RF430CL330H_Shield (DNFC Tag)[![Build Status](https://travis-ci.org/awong1900/Travis-ci_Pion-one.svg?branch=master)](https://travis-ci.org/awong1900/Travis-ci_Pion-one)
+RF430CL330H_Shield (DNFC Tag)[![Build Status](https://travis-ci.org/awong1900/RF430CL330H_Shield.svg?branch=master)](https://travis-ci.org/awong1900/RF430CL330H_Shield)
 ==================
 
 The DNFC tag is reprogrammable with a microcontroller with an I2C interface thanks to TI's RF430CL330H dynamic NFC transponder IC.
