@@ -1,28 +1,22 @@
-/* Copyright 2013 Ten Wong, wangtengoo7@gmail.com  
+/* Copyright 2013-2020 Ten Wong, wangtengoo7@gmail.com
 *  https://github.com/awong1900/RF430CL330H_Shield
 */
 
 /*******************************************************************
-** sample: easy to creat various NDEF format records, 
+** sample: easy to creat various NDEF format records,
 ** such as URI, MIME, Text, External, Application and so on.
 *******************************************************************/
-#if ARDUINO >= 100
- #include "Arduino.h"
-#else
- #include "WProgram.h"
-#endif
-#include <Wire.h>
 #include <RF430CL330H_Shield.h>
 #include <NdefMessage.h>
 #include <NdefRecord.h>
 
 //for UNO, Nona...
 #define IRQ   (1)   //External interrupt 3
-#define RESET (4)  
+#define RESET (4)
 
-//for Elecfreak NFC TAG BOT V1.2(base on Leonardo) 
-//#define IRQ   (4)  //External interrupt 7 
-//#define RESET (6)  
+//for Elecfreak NFC TAG BOT V1.2(base on Leonardo)
+//#define IRQ   (4)  //External interrupt 7
+//#define RESET (6)
 
 int led = 13;
 RF430CL330H_Shield nfc(IRQ, RESET);
@@ -30,15 +24,15 @@ RF430CL330H_Shield nfc(IRQ, RESET);
 volatile byte into_fired = 0;
 uint16_t flags = 0;
 
-void setup(void) 
+void setup(void)
 {
-    Serial.begin(115200);    
+    Serial.begin(115200);
     Serial.println("Hello!");
-    pinMode(led, OUTPUT); 
+    pinMode(led, OUTPUT);
     digitalWrite(led, HIGH);
     //RF430 init
     nfc.begin();
-    
+
 /** easy to create NDEF message with library NDEFRecord and NDEFMessage **/
 
     NdefRecord records[5];
@@ -48,7 +42,7 @@ void setup(void)
 
     //#record1 for External
     byte exData[] = {0x10, 0x11, 0x12, 0x13, 0x14};
-    String domain = "nfc"; 
+    String domain = "nfc";
     String type = "dtag";
     records[1].createExternal(domain, type, exData, sizeof(exData));
 
@@ -56,7 +50,7 @@ void setup(void)
     String mimeType = "application/vnd.com.example.android.beam";
     byte mimeData[] = "Beam me up, Android";
     records[2].createMime(type, exData, sizeof(exData));
-    
+
     //#record3 for Text
     byte text_encode[] = "Hey, Genius!";
     records[3].createText(text_encode, sizeof(text_encode), ENGLISH, true);
@@ -80,23 +74,23 @@ void setup(void)
 
     //enable interrupt
     attachInterrupt(IRQ, RF430_Interrupt, FALLING);
-    
+
     Serial.println("Wait for read or write...");
 }
 
-void loop(void) 
+void loop(void)
 {
     if(into_fired)
     {
         //clear control reg to disable RF
-        nfc.Write_Register(CONTROL_REG, nfc.Read_Register(CONTROL_REG) & ~RF_ENABLE); 
+        nfc.Write_Register(CONTROL_REG, nfc.Read_Register(CONTROL_REG) & ~RF_ENABLE);
         delay(750);
-        
+
         //read the flag register to check if a read or write occurred
-        flags = nfc.Read_Register(INT_FLAG_REG); 
+        flags = nfc.Read_Register(INT_FLAG_REG);
 
         //ACK the flags to clear
-        nfc.Write_Register(INT_FLAG_REG, EOW_INT_FLAG + EOR_INT_FLAG); 
+        nfc.Write_Register(INT_FLAG_REG, EOW_INT_FLAG + EOR_INT_FLAG);
 
         if(flags & EOW_INT_FLAG)      //check if the tag was written
         {
@@ -117,7 +111,7 @@ void loop(void)
         into_fired = 0; //we have serviced INT1
 
         //Configure INTO pin for active low and re-enable RF
-        nfc.Write_Register(CONTROL_REG, nfc.Read_Register(CONTROL_REG) | RF_ENABLE); 
+        nfc.Write_Register(CONTROL_REG, nfc.Read_Register(CONTROL_REG) | RF_ENABLE);
 
         //re-enable INTO
         attachInterrupt(IRQ, RF430_Interrupt, FALLING);
@@ -129,9 +123,8 @@ void loop(void)
 /**
 **  @brief  interrupt service
 **/
-void RF430_Interrupt()            
+void RF430_Interrupt()
 {
     into_fired = 1;
     detachInterrupt(IRQ);//cancel interrupt
 }
-

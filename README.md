@@ -1,11 +1,10 @@
 
-RF430CL330H_Shield (DNFC Tag)
+DNFC Tag: NFC that Interacts with Microcontroller
 ==================
-
-The DNFC (dynamic NFC) tag is reprogrammable with a microcontroller with an I2C interface thanks to TI's RF430CL330H dynamic NFC transponder IC.
+The DNFC (Dynamic Near Field Communication) tag, open-source NFC tag that communicates with microcontroller.
 
 ## Info
-- Indiegogo - [info](https://www.indiegogo.com/projects/dnfc-tag-nfc-that-interacts-with-microcontroller)
+- [Indiegogo successful crowdfunding](https://www.indiegogo.com/projects/dnfc-tag-nfc-that-interacts-with-microcontroller)
 
 ![nfc tag](http://www.elecfreaks.com/store/images/DNFC%20TAG-01.jpg)
 
@@ -16,7 +15,7 @@ The DNFC (dynamic NFC) tag is reprogrammable with a microcontroller with an I2C 
 //                 RF430CL330H                Arduino 2560/UNO
 //                  (Slave)                      Master
 //             _________________            _________________
-//  5V/3.3V<--|VCC           SDA|<-------->|P20(2560)/A4(UNO)|
+//     3.3V<--|VCC           SDA|<-------->|P20(2560)/A4(UNO)|
 //            |                 |    I2C   |                 |
 //            |              SCL|<-------->|P21(2560)/A5(UNO)|
 //            |                 |          |                 |
@@ -29,9 +28,11 @@ The DNFC (dynamic NFC) tag is reprogrammable with a microcontroller with an I2C 
 ```
 
 ## Start up:
-- connect Arduino 2560/UNO with NFC Tag
-- make this library to arduino IDE
-- use example to test your Tag
+1. Connect Arduino 2560/UNO with NFC Tag
+1. Make this library to arduino IDE
+1. Use example to write Tag
+1. Use NFC Reader read it
+
 
 ## Easy use with NDEF
 You can write a NDEF message, like this:
@@ -43,15 +44,12 @@ Or more than one:
 ```
 NdefRecord records[2];
 records[0].createUri("https://github.com");
-records[1].createUri("https://google.com");
+records[1].createUri("https://github.com/awong1900/RF430CL330H_Shield");
 ```
 
-We can write data in different formats for example, URI, External, MIME, Text, even Application what can ope app directly. See example/createNDEFmessage.ino
+You can write data in different formats for example, URI, External, MIME, Text, even Application what can open app directly.
 
-## NFC flower demo
-use NFC to water flower, and take the temperature, humidity, soil moisture.
-- Github Arduino Code - [water system](https://github.com/nfcwormhole/NFC-Flower/tree/master/Arduino/nfc_flower)
-- Github Android App Code - [water system](https://github.com/nfcwormhole/NFC-Flower/tree/master/Android/NFC_Flower)
-- Google Play download- [water system](https://play.google.com/store/apps/details?id=com.flower.nfcaction)
+## Recommend Reader App
+Android App [NFC Taginfo by NXP](https://play.google.com/store/apps/details?id=com.nxp.taginfolite)
 
 [![Analytics](https://ga-beacon.appspot.com/UA-61411142-2/RF430CL330H_Shield)](https://github.com/igrigorik/ga-beacon)

@@ -1,12 +1,13 @@
-/* Copyright 2013-2014 Ten Wong, wangtengoo7@gmail.com
+/* Copyright 2013-2020 Ten Wong, wangtengoo7@gmail.com
 *  https://github.com/awong1900/RF430CL330H_Shield
 */
 
-/*********************************************************
-** sample: when nfc device write the ndef data to rf430 tag,
-** the arduino will read it via I2C.
-***********************************************************/
+/*******************************************************************
+** sample: easy to creat ndef uri message
+*******************************************************************/
 #include <RF430CL330H_Shield.h>
+#include <NdefMessage.h>
+#include <NdefRecord.h>
 
 //for UNO, Nona...
 #define IRQ   (1)   //External interrupt 3
@@ -31,6 +32,26 @@ void setup(void)
     //RF430 init
     nfc.begin();
 
+/** easy to create NDEF message with library NDEFRecord and NDEFMessage **/
+
+    NdefRecord records[1];
+
+    //#record0 for URI
+    records[0].createUri("https://github.com");
+
+    //define ndef message
+    NdefMessage msg(records, sizeof(records)/sizeof(NdefRecord));
+    uint16_t msg_length = msg.getByteArrayLength();
+    byte message[msg_length];
+
+    //get ndef message
+    msg.toByteArray(message);
+
+    //write message to TAG memory
+    nfc.Write_NDEFmessage(message, msg_length);
+
+/** write message end **/
+
     //enable interrupt
     attachInterrupt(IRQ, RF430_Interrupt, FALLING);
 
@@ -47,7 +68,6 @@ void loop(void)
 
         //read the flag register to check if a read or write occurred
         flags = nfc.Read_Register(INT_FLAG_REG);
-        //Serial.print("INT_FLAG_REG = 0x");Serial.println(flags, HEX);
 
         //ACK the flags to clear
         nfc.Write_Register(INT_FLAG_REG, EOW_INT_FLAG + EOR_INT_FLAG);
@@ -55,7 +75,6 @@ void loop(void)
         if(flags & EOW_INT_FLAG)      //check if the tag was written
         {
             Serial.println("The tag was written!");
-            printf_tag();
             digitalWrite(led, LOW);
             delay(2000);
             digitalWrite(led, HIGH);
@@ -88,39 +107,4 @@ void RF430_Interrupt()
 {
     into_fired = 1;
     detachInterrupt(IRQ);//cancel interrupt
-}
-
-
-/**
-**  @brief print the writted Tag data
-**/
-void printf_tag()
-{
-    uint16_t msg_length = 0;
-    uint16_t tag_length = 0;
-
-    /* get the NDEF Message Length */
-    msg_length = nfc.Read_OneByte(0x001A) << 8 | nfc.Read_OneByte(0x001B);
-    //Serial.print("msg_length = 0x");Serial.println(msg_length, HEX);
-
-    /* entire Tag length */
-    tag_length = msg_length + 0x1C;
-    //Serial.print("tag_length = 0x");Serial.println(tag_length, HEX);
-
-    byte buffer[tag_length];
-
-    /* print the entire tag data */
-    nfc.Read_Continuous(0, buffer, tag_length);
-    Serial.println("RF430[]=0x");
-    for (uint8_t i=0; i < tag_length; i++)
-    {
-        if (buffer[i] < 0x10)
-            Serial.print("0");
-        Serial.print(buffer[i], HEX);
-        Serial.print(" ");
-        if (i%0x10 == 0x0F)
-            Serial.println();
-    }
-    Serial.println();
-
 }
