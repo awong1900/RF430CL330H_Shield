@@ -1,7 +1,7 @@
 
-DNFC Tag: NFC that Interacts with Microcontroller
+DNFC Tag, RF430CL330H_Shield
 ==================
-The DNFC (Dynamic Near Field Communication) tag, open-source NFC tag that communicates with microcontroller.
+Dynamic Near Field Communication tag, open-source NFC tag that communicates with microcontroller.
 
 ## Info
 - [Indiegogo successful crowdfunding](https://www.indiegogo.com/projects/dnfc-tag-nfc-that-interacts-with-microcontroller)
